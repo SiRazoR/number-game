@@ -1,3 +1,3 @@
 # NumberGame
 
-##[LIVE](https://sirazor.github.io/NumberGame/)
+[##LIVE](https://sirazor.github.io/NumberGame/)
