@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <title>NumberGame</title>
+</head>
+<body>
+
+    <header>
+        <!-- Header blue container -->
+        <div class="topHeaderContainer">
+            <div id="nameContainer">
+                <h1>    
+                    <span>Find the next</span> 
+                    <span id="biggerFont">Number</span> 
+                    <span>in ascending order</span>
+                </h1>
+            </div>
+            
+            <div id="levelContainer">
+                <span class="emptyBlock"></span>
+
+                <h3>
+                    <span class="inlineBlock"></span>
+                    Current level
+                </h3>
+
+                <h2>
+                    <span class="inlineBlock"></span>
+                    <span class="level">1</span>
+                    <span class="level">2</span>
+                    <span class="level">3</span>
+                    <span class="level">4</span>
+                    <span class="level">5</span>
+                </h2> 
+            </div>
+        </div>
+
+        <nav>
+            <!-- game settings -->
+            <div>
+                <div class="floatLeft">
+                    <button id="start">Start Game</button> 
+                </div>
+                <div class="floatRight">
+                    <button class="mode tooltip">Easy
+                            <span class="tooltiptext">Numbers in easy mode are increasing by 1.</span>
+                    </button>
+
+                    <button class="mode selected tooltip">Medium
+                            <span class="tooltiptext">Numbers in medium mode are increasing by 2.</span>
+                    </button>
+
+                    <button class="mode tooltip">Hard
+                            <span class="tooltiptext">Numbers in hard mode are increasing by 3.</span>
+                    </button>
+                </div>
+            </div>
+    
+            <!-- HARD CODED TO CHECK IF IT WORKS, will change it at the end -->
+            <!-- Info about game state -->
+            <div>
+                <span class="floatLeft scoreBar" style="text-align: left;" id="bestScore">Best score: </span>
+                <span class="floatLeft scoreBar" style="text-align: center;" id="message"></span>
+                <span class="floatRight scoreBar" style="text-align: right;" id="currentScore">Score:</span>
+            </div>
+    
+            <!-- Timer bar -->
+            <!-- Bar with number in the middle which indicates seconds -->
+            <div class="roundedBorder" id="timeBarText" style="text-align: center">
+                <div id="myBar"> </div>
+            </div>
+        </nav>
+        
+    </header>
+
+    <!-- Main game -->
+    <div id="container">
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+    </div>
+
+    <script src="js/game.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
