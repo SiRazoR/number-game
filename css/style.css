@@ -1,24 +1,7 @@
 body{
     background: #e7e7e7;
-    min-width: 400px;
+    min-width: 320px;
     margin: 0;
-}
-
-/* uncategorized */
-h1 span{
-    display: block;
-}
-
-#start {
-    color: rgb(16, 136, 16); 
-    background: rgba(187, 211, 148, 0.3);
-    border: 2px solid;
-}
-#start:hover {
-    color: white;
-    background: #1f7a06;
-    cursor: pointer;
-    border: none;
 }
 /* Header and header grid section */
 /* ------------------------------------------------------------------------------ */
@@ -49,7 +32,6 @@ header {
 h3{ font-size: 130%;}
 .level{padding-right: 10px;}
 .completedLevel{color: yellow;}
-.scoreBar{width: 32%;}
 .inlineBlock{
     display: inline-block;
     width: 40%;
@@ -62,6 +44,10 @@ h1, h2, h3{
     margin: 0;
     font-weight: normal;
     text-transform: uppercase;
+}
+
+h1 span{
+    display: block;
 }
 
 .stripe{
@@ -98,6 +84,18 @@ button:hover{
 }  
 
 button:focus {outline:0;}
+
+#start {
+    color: rgb(16, 136, 16); 
+    background: rgba(187, 211, 148, 0.3);
+    border: 2px solid;
+}
+#start:hover {
+    color: white;
+    background: #1f7a06;
+    cursor: pointer;
+    border: none;
+}
 
 /* Tooltip by w3schools */
 .tooltip {
@@ -141,7 +139,7 @@ button:focus {outline:0;}
 
 .floatingText {
     max-width: 800px;
-    min-width: 400px;
+    min-width: 320px;
     position:absolute;
     display: flex;
     align-items: center;

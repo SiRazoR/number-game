@@ -42,13 +42,20 @@ function makeGame() {
     function startGame(){
         startButton.style.visibility = "hidden";
         messageDisplay.textContent = "Your first number will be " + sortedArray[0];
+         
+        //I don't like this code, but I could not find a better solution
         timeBarText.textContent = "Game starts in 3 seconds";
-        
-        sleep(3000).then(() => {
-            startTimer(GAMEPLAY_TIME_IN_SECONDS);
-            drawSquares();
-            messageDisplay.textContent = "";
-        });       
+        sleep(1000).then(() => {
+            timeBarText.textContent = "Game starts in 2 seconds";
+            sleep(1000).then(() => {
+                timeBarText.textContent = "Game starts in 1 seconds";
+                sleep(1000).then(() => {
+                    startTimer(GAMEPLAY_TIME_IN_SECONDS);
+                    drawSquares();
+                    messageDisplay.textContent = "";
+                });
+            });
+        });
     }
 
     function gameLost(){
@@ -85,7 +92,7 @@ function makeGame() {
         saveBestScore();
         resetScore();
         gameDifficulty = difficulty;
-        messageDisplay.textContent = "Mode switched";
+        messageDisplay.textContent = "Difficulty switched";
     }
 
     function resetGame(){
