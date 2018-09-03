@@ -8,7 +8,7 @@ function makeGame() {
     let multiplier = 1; //To calculate score
     let level = 1;
     let sortedArray = generateRandomArray(level);
-    let shuffledArray = shuffleArray(sortedArray.slice(0));   
+    let shuffledArray = shuffleArray(sortedArray.slice(0));
     let correctAnswers = 0;
     let userClickOnEmptySquare = 0; 
     let score = 0;
@@ -52,8 +52,8 @@ function makeGame() {
     }
 
     function gameLost(){
-        resetGame();
         setLevel(1);
+        resetGame();
         saveBestScore();
         resetScore();
         console.log("Moving to the first level");
@@ -65,8 +65,8 @@ function makeGame() {
         }else{
         score += secondsLeft*gameDifficulty*5;
         showScoreOnScreen();
-        resetGame();
         setLevel(++level);
+        resetGame();
         messageDisplay.textContent = "Congrats, ready for the next level?";
         console.log("Moving to the next level");    
         }
@@ -204,9 +204,9 @@ function makeGame() {
     }
 
     function generateRandomArray(){ 
-        //random by level does not work
-        //dopisz funkcjonalnosc losowania cyfrr wzgledem lvli
-        let squareValue = Math.floor(Math.random()*50+1);
+        let startPointsByLevel = [1, 51, 201, 501, 1001];
+        let squareValue = startPointsByLevel[level-1];// -1 because array starts from [0]
+
         let array = [];
         
         for(let i=0; i<NUMBER_OF_SQUARES ; i++){
@@ -237,21 +237,18 @@ function makeGame() {
         let clickedSquare = square.textContent;
         if(clickedSquare == sortedArray[0]){
             square.style.visibility="hidden";
-            sortedArray.splice(0,1);//add comment
-            correctAnswers++;
+            sortedArray.splice(0,1);//remove first item from sorted array
+            correctAnswers++;       //now sortedArray[0] is the next lowest number
             addScore();
         }else if(clickedSquare == ""){ 
             //if user pressed empty square several times before game starts, 
             //startGame() were called more than once 
             //this if() prevents user to call startGame more than once
-            console.log("userClickOnEmptySquare" + userClickOnEmptySquare);
             if (userClickOnEmptySquare<1) {
                 console.log("start game");
                 startGame();
             }
-            
             ++userClickOnEmptySquare;
-            console.log("userClickOnEmptySquare after start" + userClickOnEmptySquare);
         }else{
             messageDisplay.textContent = "You clicked " + square.textContent + " but there was " + sortedArray[0];
             gameLost();  
@@ -297,6 +294,5 @@ function makeGame() {
       showGameStatus,
       resetGame,
       gameWon,
-      //clean high score from cookies
     };
   }
