@@ -5,16 +5,17 @@ function makeGame() {
     const NUMBER_OF_SQUARES = 24;
     const GAMEPLAY_TIME_IN_SECONDS = 35;
     let gameDifficulty = 1; //TODO Enum
-    let multiplier = 1; //add comment   
+    let multiplier = 1; //To calculate score
     let level = 1;
     let sortedArray = generateRandomArray(level);
     let shuffledArray = shuffleArray(sortedArray.slice(0));   
     let correctAnswers = 0;
+    let userClickOnEmptySquare = 0; 
     let score = 0;
     let highScore = 0;
+    let secondsLeft = 0;
     let timerInterval = 0;
     let timerBarInterval = 0;
-    let secondsLeft = 0;
 
     //html elements
     let difficultyButtons = document.querySelectorAll(".mode");
@@ -30,9 +31,14 @@ function makeGame() {
     function init(){
         setupEventListeners();
         setLevel(1);
-        console.log("Game initialized");
     }
 
+    //MAIN FUNCTIONALITY SECTION
+    //-----------------------------------------------------------------------
+    function sleep (ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+    
     function startGame(){
         startButton.style.visibility = "hidden";
         messageDisplay.textContent = "Your first number will be " + sortedArray[0];
@@ -45,18 +51,14 @@ function makeGame() {
         });       
     }
 
-    function sleep (ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    function endOfTheGame(){
-        messageDisplay.textContent = "You have reached the end of the game";
+    function gameLost(){
+        resetGame();
+        setLevel(1);
         saveBestScore();
         resetScore();
-        showScoreOnScreen();
-        setLevel(1);
+        console.log("Moving to the first level");
     }
-
+    
     function gameWon(){
         if(level === 5) {
             endOfTheGame()
@@ -71,12 +73,12 @@ function makeGame() {
           
     }
 
-    function gameLost(){
-        resetGame();
-        setLevel(1);
+    function endOfTheGame(){
+        messageDisplay.textContent = "You have reached the end of the game";
         saveBestScore();
         resetScore();
-        console.log("Moving to the first level");
+        showScoreOnScreen();
+        setLevel(1);
     }
 
     function changeGameDifficulty(difficulty){
@@ -87,6 +89,7 @@ function makeGame() {
     }
 
     function resetGame(){
+        userClickOnEmptySquare = 0;
         cleanBoard();
         generateNewFilledArrays();
         resetTimers();
@@ -101,26 +104,24 @@ function makeGame() {
         }
     }
 
-    function drawSquares(){
-        for (let i = 0; i < squares.length; i++) {
-            squares[i].textContent = shuffledArray[i];
-        }
-    }
-
     function showGameStatus(){
         console.log("Numbers array: " + shuffledArray);
         console.log("Sorted numbers array: " + sortedArray);
         console.log("Game level: " + level);
-        console.log("Game mode: " + gameDifficulty);
+        console.log("Game difficulty: " + gameDifficulty);
         console.log("Multiplier: " + multiplier);
+        console.log("Score: " + score);
+        console.log("HighScore: " + highScore);
     }
 
+
+    //SCORE SECTION
+    //-----------------------------------------------------------------------
     function addScore(){
         score += multiplier*gameDifficulty*5;
         showScoreOnScreen();
     }
     
-    //add to cookies
     function saveBestScore(){
         if(score > highScore){ 
             highScore = score; 
@@ -137,47 +138,8 @@ function makeGame() {
         currentScore.textContent = "Score: " + score;
     }
 
-    function setLevel(lvl){
-        //new multiplier
-        multiplier = (lvl * 0.2 + 0.8).toFixed(1);
-
-        level = lvl;
-        //If someone lose it is nessesairy to reset colors
-        for (let i = 0; i < 5; i++) {
-            levelDisplay[i].classList.remove("completedLevel");
-        }
-        //setting next level as completed
-        for (let i = 0; i < level; i++) {
-            levelDisplay[i].classList.add("completedLevel");
-        }
-    }
-    
-    function generateNewFilledArrays(){
-        sortedArray = generateRandomArray();
-        shuffledArray = shuffleArray(sortedArray.slice(0));
-    }
-
-    function generateRandomArray(){ 
-        //random by level does not work
-        //dopisz funkcjonalnosc losowania cyfrr wzgledem lvli
-        let squareValue = Math.floor(Math.random()*50+1);
-        let array = [];
-        
-        for(let i=0; i<NUMBER_OF_SQUARES ; i++){
-            array[i] = squareValue;
-            squareValue += gameDifficulty;
-        }
-        return array;
-    }
-    
-    function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-    return arr;
-    }
-
+    //TIMER SECTION
+    //-----------------------------------------------------------------------
     function resetTimers(){
         clearInterval(timerInterval);
         timeBarText.textContent = "";
@@ -216,6 +178,60 @@ function makeGame() {
             }
         }
         }
+    
+    //LEVEL SECTION
+    //-----------------------------------------------------------------------
+    function setLevel(lvl){
+        //new multiplier
+        multiplier = (lvl * 0.2 + 0.8).toFixed(1);
+
+        level = lvl;
+        //If someone lose it is nessesairy to reset colors
+        for (let i = 0; i < 5; i++) {
+            levelDisplay[i].classList.remove("completedLevel");
+        }
+        //setting next level as completed
+        for (let i = 0; i < level; i++) {
+            levelDisplay[i].classList.add("completedLevel");
+        }
+    }
+    
+    //ARRAYS SECTION
+    //-----------------------------------------------------------------------
+    function generateNewFilledArrays(){
+        sortedArray = generateRandomArray();
+        shuffledArray = shuffleArray(sortedArray.slice(0));
+    }
+
+    function generateRandomArray(){ 
+        //random by level does not work
+        //dopisz funkcjonalnosc losowania cyfrr wzgledem lvli
+        let squareValue = Math.floor(Math.random()*50+1);
+        let array = [];
+        
+        for(let i=0; i<NUMBER_OF_SQUARES ; i++){
+            array[i] = squareValue;
+            squareValue += gameDifficulty;
+        }
+        return array;
+    }
+    
+    function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    return arr;
+    }
+
+
+    //SQUARE SECTION
+    //-----------------------------------------------------------------------
+    function drawSquares(){
+        for (let i = 0; i < squares.length; i++) {
+            squares[i].textContent = shuffledArray[i];
+        }
+    }
 
     function onSquarePressed(square){
         let clickedSquare = square.textContent;
@@ -224,8 +240,18 @@ function makeGame() {
             sortedArray.splice(0,1);//add comment
             correctAnswers++;
             addScore();
-        }else if(clickedSquare == ""){  
-            startGame();
+        }else if(clickedSquare == ""){ 
+            //if user pressed empty square several times before game starts, 
+            //startGame() were called more than once 
+            //this if() prevents user to call startGame more than once
+            console.log("userClickOnEmptySquare" + userClickOnEmptySquare);
+            if (userClickOnEmptySquare<1) {
+                console.log("start game");
+                startGame();
+            }
+            
+            ++userClickOnEmptySquare;
+            console.log("userClickOnEmptySquare after start" + userClickOnEmptySquare);
         }else{
             messageDisplay.textContent = "You clicked " + square.textContent + " but there was " + sortedArray[0];
             gameLost();  
@@ -236,6 +262,8 @@ function makeGame() {
         }
     }
 
+    //EVENT LISTENERS
+    //-----------------------------------------------------------------------
     function setupEventListeners(){
         //Square event listeners
         for (let i = 0; i < squares.length; i++) {
@@ -246,6 +274,7 @@ function makeGame() {
 
         //Start game button
         startButton.addEventListener("click", function(){
+           ++userClickOnEmptySquare;
            startGame();
         });
 
@@ -262,7 +291,6 @@ function makeGame() {
             });
         }
     }
-
 
     return {
       init,
