@@ -2,16 +2,20 @@ function makeGame() {
     console.log("Game object created");
     
     //variables
-    let gameMode = 2;
+    const NUMBER_OF_SQUARES = 24;
+    const GAMEPLAY_TIME_IN_SECONDS = 30;
+    let gameDifficulty = 2; //TODO Enum
     let level = 1;
-    let sortedNumbersArray = randomArray(level);
-    let numbersArray = shuffleArray(sortedNumbersArray.slice(0));   
-    let correctNumbers = 0;
-    let timerInterval;
-    let clickedNumbers;
+    let sortedArray = generateRandomArray(level);
+    let shuffledArray = shuffleArray(sortedArray.slice(0));   
+    let correctAnswers = 0;
+    let multiplier = 1; //add comment
+    let score = 0;
+    let highScore = 0;
+    let timeLeft = 0;
 
     //html elements
-    let modeButtons = document.querySelectorAll(".mode");
+    let difficultyButtons = document.querySelectorAll(".mode");
     let startButton = document.querySelector("#start");
     let messageDisplay = document.querySelector("#message");
     let levelDisplay = document.querySelectorAll(".level");
@@ -19,44 +23,51 @@ function makeGame() {
     let timeBar = document.querySelector("#myBar");
     let squares = document.querySelectorAll(".square");
     let currentScore = document.querySelector("#currentScore");
-    let bestScore = document.querySelector("#bestScore");
-    
+    let highestScore = document.querySelector("#highestScore"); 
 
     function init(){
         setupEventListeners();
-        setLevel(1);
         console.log("Game initialized");
     }
 
     function startGame(){
         startButton.style.visibility = "hidden";
-        messageDisplay.textContent = "First number is " + sortedNumbersArray[0];
-        startTimer(10);//for now let it be 10 sec
+        messageDisplay.textContent = "First number is " + sortedArray[0];
+        //delay 3 sekundy, wyswietl wiadomosc jaka ma byc pierwsza liczba
+        startTimer(GAMEPLAY_TIME_IN_SECONDS);
         drawSquares();
     }
 
-    function youWon(){
-        reset();
+    function gameWon(){
+        //jezeli lvl 5 to zablokuj gre, podziekuj i nara
+        score += timeLeft*gameDifficulty*5;
+        showScoreOnScreen();
+        resetGame();
         setLevel(++level);
         messageDisplay.textContent = "Congrats, next level";
         console.log("Moving to the next level");   
     }
 
-    function youLost(){
-        reset();
-        setLevel(1); 
-        console.log("Moving to first level");
+    function gameLost(){
+        resetGame();
+        setLevel(1);
+        saveBestScore();
+        resetScore();
+        console.log("Moving to the first level");
     }
 
-    function changeGameplayMode(mode){
-        gameMode = mode;
+    function changeGameDifficulty(difficulty){
+        saveBestScore();
+        resetScore();
+        gameDifficulty = difficulty;
         messageDisplay.textContent = "Mode switched";
     }
 
-    function reset(){
+    function resetGame(){
         cleanBoard();
-        generateNewFilledArray();
-        clearInterval(timerInterval);
+        generateNewFilledArrays();
+        clearInterval(timeLeft);
+        correctAnswers = 0;
         timeBarText.textContent = "";
         startButton.style.visibility = "visible";  
     }
@@ -70,18 +81,44 @@ function makeGame() {
 
     function drawSquares(){
         for (let i = 0; i < squares.length; i++) {
-            squares[i].textContent = numbersArray[i];
+            squares[i].textContent = shuffledArray[i];
         }
     }
 
     function showGameStatus(){
-        console.log("Numbers array: " + numbersArray);
-        console.log("Sorted numbers array: " + sortedNumbersArray);
+        console.log("Numbers array: " + shuffledArray);
+        console.log("Sorted numbers array: " + sortedArray);
         console.log("Game level: " + level);
-        console.log("Game mode: " + gameMode);
+        console.log("Game mode: " + gameDifficulty);
+        console.log("Multiplier: " + multiplier);
+    }
+
+    function addScore(){
+        score += multiplier*gameDifficulty*5;
+        showScoreOnScreen();
+    }
+    
+    //add to cookies
+    function saveBestScore(){
+        if(score > highScore){ 
+            highScore = score; 
+            highestScore.textContent = "Best score: " + highScore;
+        }
+    }
+    
+    function resetScore(){
+        score = 0;
+        showScoreOnScreen();
+    }
+    
+    function showScoreOnScreen(){
+        currentScore.textContent = "Score: " + score;
     }
 
     function setLevel(lvl){
+        //new multiplier
+        multiplier = (lvl * 0.2 + 0.8).toFixed(1);
+
         level = lvl;
         //If someone lose it is nessesairy to reset colors
         for (let i = 0; i < 5; i++) {
@@ -93,18 +130,20 @@ function makeGame() {
         }
     }
     
-    function generateNewFilledArray(){
-        sortedNumbersArray = randomArray(level);
-        numbersArray = shuffleArray(sortedNumbersArray.slice(0));
+    function generateNewFilledArrays(){
+        sortedArray = generateRandomArray();
+        shuffledArray = shuffleArray(sortedArray.slice(0));
     }
 
-    function randomArray(level){ //random by level does not work
-        let arrayStartPoint = Math.floor(Math.random()*50+1);
+    function generateRandomArray(){ 
+        //random by level does not work
+        //dopisz funkcjonalnosc losowania cyfrr wzgledem lvli
+        let squareValue = Math.floor(Math.random()*50+1);
         let array = [];
         
-        for(let i=0; i<24 ; i++){
-            array[i] = arrayStartPoint;
-            arrayStartPoint += gameMode;
+        for(let i=0; i<NUMBER_OF_SQUARES ; i++){
+            array[i] = squareValue;
+            squareValue += gameDifficulty;
         }
         return array;
     }
@@ -118,15 +157,14 @@ function makeGame() {
     }
 
     function startTimer(seconds){
-        draw();
-        timerInterval = setInterval(draw, 1000);
+        showTime();
+        timeLeft = setInterval(showTime, 1000);
 
-        function draw(){
+        function showTime(){
             if(timeBarText.textContent === "1"){
-                timeBarText.textContent = "";
-                youLost();
+                gameLost();
                 messageDisplay.textContent = "Time is over";
-                clearInterval(timerInterval);
+                clearInterval(timeLeft);
             }
             else{
                 timeBarText.textContent = seconds;
@@ -135,58 +173,48 @@ function makeGame() {
         }
     }
 
-    //function addscore(level)
-    //calculate score depending on the level
-    //show score on screen
-
-    //function saveBestScore()
-    //add to cookies
-    //show on page
-
-    function clickedSquare(square){
+    function onSquarePressed(square){
         let clickedSquare = square.textContent;
-        if(clickedSquare == sortedNumbersArray[0]){
+        if(clickedSquare == sortedArray[0]){
             square.style.visibility="hidden";
-            sortedNumbersArray.splice(0,1);
-            correctNumbers++;
-            //addscore
-        }
-        else if(clickedSquare == ""){  
-            messageDisplay.textContent = "Please start game first";
-        }
-        else{
-            messageDisplay.textContent = "You clicked " + square.textContent + " but there was " + sortedNumbersArray[0];
-            youLost();  
+            sortedArray.splice(0,1);//add comment
+            correctAnswers++;
+            addScore();
+        }else if(clickedSquare == ""){  
+            startGame();
+        }else{
+            messageDisplay.textContent = "You clicked " + square.textContent + " but there was " + sortedArray[0];
+            gameLost();  
         }
 
-        if(correctNumbers === 24){
-            youWon();
+        if(correctAnswers === NUMBER_OF_SQUARES){
+            gameWon();
         }
     }
 
     function setupEventListeners(){
-        //square event listeners
+        //Square event listeners
         for (let i = 0; i < squares.length; i++) {
             squares[i].addEventListener("click", function(){
-                clickedSquare(this);
+                onSquarePressed(this);
             })
         }
 
-        //Start game
+        //Start game button
         startButton.addEventListener("click", function(){
            startGame();
         });
 
-        //mode buttons listeners
-        for (let buttonNumber = 0; buttonNumber < modeButtons.length; buttonNumber++) {
-            modeButtons[buttonNumber].addEventListener("click", function(){
-                modeButtons[0].classList.remove("selected");
-                modeButtons[1].classList.remove("selected");
-                modeButtons[2].classList.remove("selected");
+        //difficulty buttons listeners
+        for (let buttonNumber = 0; buttonNumber < difficultyButtons.length; buttonNumber++) {
+            difficultyButtons[buttonNumber].addEventListener("click", function(){
+                difficultyButtons[0].classList.remove("selected");
+                difficultyButtons[1].classList.remove("selected");
+                difficultyButtons[2].classList.remove("selected");
                 this.classList.add("selected");
                 setLevel(1);
-                changeGameplayMode(buttonNumber+1);//because buttonNumber starts from 0
-                reset();
+                changeGameDifficulty(buttonNumber+1);//because buttonNumber starts from 0
+                resetGame();
             });
         }
     }
@@ -194,8 +222,8 @@ function makeGame() {
     return {
       init,
       showGameStatus,
-      reset,
-      youWon,
+      resetGame,
+      gameWon,
       //clean high score from cookies
     };
   }

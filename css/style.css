@@ -1,6 +1,6 @@
 body{
     background: #e7e7e7;
-    min-width: 360px;
+    min-width: 370px;
     margin: 0;
 }
 
@@ -9,7 +9,17 @@ h1 span{
     display: block;
 }
 
-
+#start {
+    color: rgb(16, 136, 16); 
+    background: rgba(187, 211, 148, 0.3);
+    border: 2px solid;
+}
+#start:hover {
+    color: white;
+    background: #1f7a06;
+    cursor: pointer;
+    border: none;
+}
 /* Header and header grid section */
 /* ------------------------------------------------------------------------------ */
 .topHeaderContainer{
@@ -39,7 +49,7 @@ header {
 h3{ font-size: 130%;}
 .level{padding-right: 10px;}
 .completedLevel{color: yellow;}
-.scoreBar{width: 33%;}
+.scoreBar{width: 32%;}
 .inlineBlock{
     display: inline-block;
     width: 40%;
@@ -151,6 +161,7 @@ button:focus {outline:0;}
         "nameContainer"
         "levelContainer";
     }
+
     .emptyBlock{
         height: 0px;
     }
