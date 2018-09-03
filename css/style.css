@@ -14,7 +14,7 @@ h1 span{
     background: rgba(187, 211, 148, 0.3);
     border: 2px solid;
 }
-#START:hover {
+#start:hover {
     color: white;
     background: #1f7a06;
     cursor: pointer;
