@@ -1,6 +1,6 @@
 body{
     background: #e7e7e7;
-    min-width: 320px;
+    min-width: 400px;
     margin: 0;
 }
 /* Header and header grid section */
@@ -139,7 +139,7 @@ button:focus {outline:0;}
 
 .floatingText {
     max-width: 800px;
-    min-width: 320px;
+    min-width: 400px;
     position:absolute;
     display: flex;
     align-items: center;
@@ -187,6 +187,7 @@ button:focus {outline:0;}
 }
 
 @media only screen and (max-width: 600px) {
+
     .topHeaderContainer{
         grid-template-columns: 1fr;
         grid-template-areas: 
@@ -208,6 +209,11 @@ button:focus {outline:0;}
 }
 
 @media only screen and (max-width: 500px) {
+
+    #nameContainer{
+        font-size: 75%;
+    }
+
     #container{
         grid-auto-rows: 55.5px;
     }
