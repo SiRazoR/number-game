@@ -42,16 +42,16 @@
 
         <nav>
             <!-- game settings -->
-            <div>
+            <div class="stripe">
                 <div class="floatLeft">
                     <button id="start">Start Game</button> 
                 </div>
                 <div class="floatRight">
-                    <button class="mode tooltip">Easy
+                    <button class="mode selected tooltip">Easy
                             <span class="tooltiptext">Numbers in easy mode are increasing by 1.</span>
                     </button>
 
-                    <button class="mode selected tooltip">Medium
+                    <button class="mode tooltip">Medium
                             <span class="tooltiptext">Numbers in medium mode are increasing by 2.</span>
                     </button>
 
@@ -62,18 +62,20 @@
             </div>
     
             <!-- HARD CODED TO CHECK IF IT WORKS, will change it at the end -->
-            <!-- Info about game state -->
-            <div>
-                <span class="floatLeft scoreBar" style="text-align: left;" id="highestScore">Best score: 0</span>
-                <span class="floatLeft scoreBar" style="text-align: center;" id="message"></span>
-                <span class="floatRight scoreBar" style="text-align: right;" id="currentScore">Score: 0</span>
+            <!-- Info about game state -->    
+            <div class="scoreStripe">
+                <span id="highestScore">Best score: 0</span>
+                <span id="message" style="text-align: center;"></span>
+                <span id="currentScore" style="text-align: right;">Score: 0</span>
             </div>
-    
+
             <!-- Timer bar -->
-            <!-- Bar with number in the middle which indicates seconds -->
-            <div class="roundedBorder" id="timeBarText" style="text-align: center">
-                <!-- <div id="myBar"> </div> -->
+            <div class="roundedBorder stripe">
+             <div id="myBar"> 
+                <div class="floatingText"> <p id="timeBarText"></p></div>
+            </div> 
             </div>
+              
         </nav>
         
     </header>

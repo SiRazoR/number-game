@@ -3,16 +3,18 @@ function makeGame() {
     
     //variables
     const NUMBER_OF_SQUARES = 24;
-    const GAMEPLAY_TIME_IN_SECONDS = 30;
-    let gameDifficulty = 2; //TODO Enum
+    const GAMEPLAY_TIME_IN_SECONDS = 35;
+    let gameDifficulty = 1; //TODO Enum
+    let multiplier = 1; //add comment   
     let level = 1;
     let sortedArray = generateRandomArray(level);
     let shuffledArray = shuffleArray(sortedArray.slice(0));   
     let correctAnswers = 0;
-    let multiplier = 1; //add comment
     let score = 0;
     let highScore = 0;
-    let timeLeft = 0;
+    let timerInterval = 0;
+    let timerBarInterval = 0;
+    let secondsLeft = 0;
 
     //html elements
     let difficultyButtons = document.querySelectorAll(".mode");
@@ -27,25 +29,46 @@ function makeGame() {
 
     function init(){
         setupEventListeners();
+        setLevel(1);
         console.log("Game initialized");
     }
 
     function startGame(){
         startButton.style.visibility = "hidden";
-        messageDisplay.textContent = "First number is " + sortedArray[0];
-        //delay 3 sekundy, wyswietl wiadomosc jaka ma byc pierwsza liczba
-        startTimer(GAMEPLAY_TIME_IN_SECONDS);
-        drawSquares();
+        messageDisplay.textContent = "Your first number will be " + sortedArray[0];
+        timeBarText.textContent = "Game starts in 3 seconds";
+        
+        sleep(3000).then(() => {
+            startTimer(GAMEPLAY_TIME_IN_SECONDS);
+            drawSquares();
+            messageDisplay.textContent = "";
+        });       
+    }
+
+    function sleep (ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function endOfTheGame(){
+        messageDisplay.textContent = "You have reached the end of the game";
+        saveBestScore();
+        resetScore();
+        showScoreOnScreen();
+        setLevel(1);
     }
 
     function gameWon(){
-        //jezeli lvl 5 to zablokuj gre, podziekuj i nara
-        score += timeLeft*gameDifficulty*5;
+        if(level === 5) {
+            endOfTheGame()
+        }else{
+        score += secondsLeft*gameDifficulty*5;
         showScoreOnScreen();
         resetGame();
         setLevel(++level);
-        messageDisplay.textContent = "Congrats, next level";
-        console.log("Moving to the next level");   
+        messageDisplay.textContent = "Congrats, ready for the next level?";
+        console.log("Moving to the next level");    
+        }
+          
     }
 
     function gameLost(){
@@ -66,9 +89,8 @@ function makeGame() {
     function resetGame(){
         cleanBoard();
         generateNewFilledArrays();
-        clearInterval(timeLeft);
+        resetTimers();
         correctAnswers = 0;
-        timeBarText.textContent = "";
         startButton.style.visibility = "visible";  
     }
 
@@ -156,22 +178,44 @@ function makeGame() {
     return arr;
     }
 
-    function startTimer(seconds){
-        showTime();
-        timeLeft = setInterval(showTime, 1000);
+    function resetTimers(){
+        clearInterval(timerInterval);
+        timeBarText.textContent = "";
+        clearInterval(timerBarInterval);
+        timeBar.style.width = '0%';
+    }
 
-        function showTime(){
-            if(timeBarText.textContent === "1"){
+    function startTimer(seconds){
+        drawTimerBar();
+        displayTime(seconds);
+        timerInterval = setInterval(displayTime, 1000);
+
+        function displayTime(){
+            if(timeBarText.textContent === "1s"){
                 gameLost();
                 messageDisplay.textContent = "Time is over";
-                clearInterval(timeLeft);
             }
             else{
-                timeBarText.textContent = seconds;
+                secondsLeft = seconds;
+                timeBarText.textContent = seconds + "s";
                 seconds--;
             }
         }
     }
+
+    function drawTimerBar(){
+        var width = 0;
+        let gameplayInMiliseconds = GAMEPLAY_TIME_IN_SECONDS *10;
+        let intervalsInMiliseconds = 100;
+        timerBarInterval = setInterval(drawTimeBar, intervalsInMiliseconds);
+        function drawTimeBar() {
+            if (width >= 100) {
+            } else {
+            width+=intervalsInMiliseconds/gameplayInMiliseconds; 
+            timeBar.style.width = width + '%'; 
+            }
+        }
+        }
 
     function onSquarePressed(square){
         let clickedSquare = square.textContent;
@@ -218,6 +262,7 @@ function makeGame() {
             });
         }
     }
+
 
     return {
       init,
