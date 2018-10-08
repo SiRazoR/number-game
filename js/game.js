@@ -270,30 +270,30 @@ function makeGame() {
     //-----------------------------------------------------------------------
     function setupEventListeners(){
         //Square event listeners
-        for (let i = 0; i < squares.length; i++) {
-            squares[i].addEventListener("click", function(){
-                onSquarePressed(this);
-            })
-        }
+        squares.forEach(square => {
+            square.addEventListener("click", ()=> {
+                onSquarePressed(square);
+            });
+        });
 
         //Start game button
-        startButton.addEventListener("click", function(){
-           ++userClickOnEmptySquare;
-           startGame();
+        startButton.addEventListener("click", ()=> {
+            ++userClickOnEmptySquare;
+            startGame();
         });
 
         //difficulty buttons listeners
-        for (let buttonNumber = 0; buttonNumber < difficultyButtons.length; buttonNumber++) {
-            difficultyButtons[buttonNumber].addEventListener("click", function(){
-                difficultyButtons[0].classList.remove("selected");
-                difficultyButtons[1].classList.remove("selected");
-                difficultyButtons[2].classList.remove("selected");
-                this.classList.add("selected");
-                setLevel(1);
-                changeGameDifficulty(buttonNumber+1);//because buttonNumber starts from 0
-                resetGame();
-            });
-        }
+        difficultyButtons.forEach( (difficultyButton, buttonIndex) => {
+                difficultyButton.addEventListener("click",() => {
+                    difficultyButtons[0].classList.remove("selected");
+                    difficultyButtons[1].classList.remove("selected");
+                    difficultyButtons[2].classList.remove("selected");
+                    difficultyButton.classList.add("selected");
+                    setLevel(1);
+                    changeGameDifficulty(buttonIndex+1);//because buttonNumber starts from 0
+                    resetGame();
+                })
+        })
     }
 
     return {
