@@ -3,11 +3,36 @@ body{
     min-width: 320px;
     margin: 0;
 }
+
+.hideElements{
+    position: absolute;
+}
+
+.boardCover{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.onStartMessage{
+    color: rgb(16, 136, 16); 
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 4em;
+    font-family: Montserrat;
+    background-color: rgb(253, 253, 253);
+    border: solid #504c4c 1px;
+    border-radius: 5px;
+}
+
 /* Header and header grid section */
 /* ------------------------------------------------------------------------------ */
 .topHeaderContainer{
     display: grid;
-    background-color: #002843;
+    background-color: rgb(0, 40, 67);
     grid-template-columns: 1fr 1fr;
     grid-template-areas: 
     "nameContainer levelContainer";
@@ -115,8 +140,8 @@ button:focus {outline:0;}
     
     border-radius: 6px;
 
-    top: -5px;
-    right: 105%; 
+    top: 110%;
+    right: 100%; 
     position: absolute;
     z-index: 1;
 }
@@ -148,7 +173,7 @@ button:focus {outline:0;}
     height: 30px;
 }
 
-#myBar {
+#timerBar {
     width: 0%;
     height: 30px;
     border-radius: 20px;
@@ -168,6 +193,8 @@ button:focus {outline:0;}
 }
 
 #container{
+    overflow: hidden;
+    position: relative;
     max-width: 800px;
     margin: 20px auto;
     display: grid;
@@ -214,6 +241,10 @@ button:focus {outline:0;}
         font-size: 80%;
     }
 
+    .onStartMessage{
+        font-size: 3em;
+    }
+    
     #container{
         grid-auto-rows: 55.5px;
     }
@@ -223,6 +254,9 @@ button:focus {outline:0;}
 
     button{
         font-size: 80%;
+    }
+    .onStartMessage{
+        font-size: 2.2em;
     }
     .scoreStripe{
         font-size: 90%;

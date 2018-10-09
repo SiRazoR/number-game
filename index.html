@@ -13,7 +13,6 @@
 <body>
 
     <header>
-        <!-- Header blue container -->
         <div class="topHeaderContainer">
             <div id="nameContainer">
                 <h1>    
@@ -33,7 +32,7 @@
 
                 <h2>
                     <span class="inlineBlock"></span>
-                    <span class="level">1</span>
+                    <span class="level completedLevel">1</span>
                     <span class="level">2</span>
                     <span class="level">3</span>
                     <span class="level">4</span>
@@ -63,7 +62,6 @@
                 </div>
             </div>
     
-            <!-- HARD CODED TO CHECK IF IT WORKS, will change it at the end -->
             <!-- Info about game state -->    
             <div class="scoreStripe">
                 <span id="highestScore">Best score: 0</span>
@@ -73,17 +71,21 @@
 
             <!-- Timer bar -->
             <div class="roundedBorder stripe">
-             <div id="myBar"> 
-                <div class="floatingText"> <p id="timeBarText"></p></div>
-            </div> 
-            </div>
-              
-        </nav>
-        
+                <div id="timerBar"> 
+                    <div class="floatingText"> <p id="digitalTimerText"></p></div>
+                </div> 
+            </div>  
+        </nav> 
     </header>
+
 
     <!-- Main game -->
     <div id="container">
+
+        <div class="hideElements" id="boardCover">
+            <div class="onStartMessage"></div>
+        </div>
+        
         <div class="square"></div>
         <div class="square"></div>
         <div class="square"></div>

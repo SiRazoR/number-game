@@ -1,61 +1,47 @@
-function makeGame() {
-    console.log("Game object created");
-    
+function makeGame() {    
     //variables
     const NUMBER_OF_SQUARES = 24;
     const GAMEPLAY_TIME_IN_SECONDS = 35;
-    let gameDifficulty = 1; //TODO Enum
+    let gameDifficulty = 1;
     let multiplier = 1; //To calculate score
     let level = 1;
-    let sortedArray = generateRandomArray(level);
+    let sortedArray = generateArrayByLevel();
     let shuffledArray = shuffleArray(sortedArray.slice(0));
     let correctAnswers = 0;
-    let userClickOnEmptySquare = 0; 
     let score = 0;
     let highScore = 0;
     let secondsLeft = 0;
-    let timerInterval = 0;
-    let timerBarInterval = 0;
+    let secondsToStart = 3;
+    let isGameStarted = false;
+    let digitalTimerInterval = 0;
+    let barTimerInterval = 0;
 
     //html elements
     let difficultyButtons = document.querySelectorAll(".mode");
     let startButton = document.querySelector("#start");
     let messageDisplay = document.querySelector("#message");
     let levelDisplay = document.querySelectorAll(".level");
-    let timeBarText = document.querySelector("#timeBarText");
-    let timeBar = document.querySelector("#myBar");
+    let digitalTimerText = document.querySelector("#digitalTimerText");
+    let timerBar = document.querySelector("#timerBar");
     let squares = document.querySelectorAll(".square");
     let currentScore = document.querySelector("#currentScore");
     let highestScore = document.querySelector("#highestScore"); 
+    let boardCover = document.querySelector("#boardCover");
+    let onStartMessage = document.querySelector(".onStartMessage"); 
 
     function init(){
-        setupEventListeners();
-        setLevel(1);
+        setupEventListeners(); //squares, start button, difficulty buttons
     }
 
     //MAIN FUNCTIONALITY SECTION
     //-----------------------------------------------------------------------
-    function sleep (ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-    
     function startGame(){
+        isGameStarted = true;
         startButton.style.visibility = "hidden";
         messageDisplay.textContent = "Your first number will be " + sortedArray[0];
-         
-        //I don't like this code, but I could not find a better solution
-        timeBarText.textContent = "Game starts in 3 seconds";
-        sleep(1000).then(() => {
-            timeBarText.textContent = "Game starts in 2 seconds";
-            sleep(1000).then(() => {
-                timeBarText.textContent = "Game starts in 1 seconds";
-                sleep(1000).then(() => {
-                    startTimer(GAMEPLAY_TIME_IN_SECONDS);
-                    drawSquares();
-                    messageDisplay.textContent = "";
-                });
-            });
-        });
+        countdownToStart();
+        startCountdownInterval = setInterval(countdownToStart, 1000);
+        showBoardCover();
     }
 
     function gameLost(){
@@ -63,6 +49,8 @@ function makeGame() {
         resetGame();
         saveBestScore();
         resetScore();
+        showBoardCover(); //covering board for 1.5s
+        setTimeout(()=>{hideBoardCover();},1300);
         console.log("Moving to the first level");
     }
     
@@ -76,8 +64,7 @@ function makeGame() {
         resetGame();
         messageDisplay.textContent = "Congrats, ready for the next level?";
         console.log("Moving to the next level");    
-        }
-          
+        }   
     }
 
     function endOfTheGame(){
@@ -86,6 +73,7 @@ function makeGame() {
         resetScore();
         showScoreOnScreen();
         setLevel(1);
+        resetGame();
     }
 
     function changeGameDifficulty(difficulty){
@@ -96,10 +84,11 @@ function makeGame() {
     }
 
     function resetGame(){
-        userClickOnEmptySquare = 0;
+        isGameStarted = false;
         cleanBoard();
         generateNewFilledArrays();
         resetTimers();
+        hideBoardCover();
         correctAnswers = 0;
         startButton.style.visibility = "visible";  
     }
@@ -121,6 +110,14 @@ function makeGame() {
         console.log("HighScore: " + highScore);
     }
 
+    function showBoardCover(){
+        boardCover.classList.add("boardCover")
+    }
+
+    function hideBoardCover(){
+        boardCover.classList.remove("boardCover")
+        onStartMessage.textContent = "";
+    }
 
     //SCORE SECTION
     //-----------------------------------------------------------------------
@@ -148,40 +145,59 @@ function makeGame() {
     //TIMER SECTION
     //-----------------------------------------------------------------------
     function resetTimers(){
-        clearInterval(timerInterval);
-        timeBarText.textContent = "";
-        clearInterval(timerBarInterval);
-        timeBar.style.width = '0%';
+        clearInterval(digitalTimerInterval);
+        digitalTimerText.textContent = "";
+        clearInterval(barTimerInterval);
+        timerBar.style.width = '0%';
+        clearInterval(startCountdownInterval);
+        secondsToStart = 3;
     }
 
-    function startTimer(seconds){
-        drawTimerBar();
-        displayTime(seconds);
-        timerInterval = setInterval(displayTime, 1000);
+    function startGameplayTimer(seconds){
+        drawBarTimer();
+        displayDigitalTimer(seconds);
+        digitalTimerInterval = setInterval(displayDigitalTimer, 1000);
 
-        function displayTime(){
-            if(timeBarText.textContent === "1s"){
+        function displayDigitalTimer(){
+            if(digitalTimerText.textContent === "1s"){
                 gameLost();
                 messageDisplay.textContent = "Time is over";
             }
             else{
                 secondsLeft = seconds;
-                timeBarText.textContent = seconds + "s";
+                digitalTimerText.textContent = seconds + "s";
                 seconds--;
             }
         }
     }
 
-    function drawTimerBar(){
+    function countdownToStart(){
+        if(isGameStarted){
+            if(secondsToStart === 0){
+                drawSquares();
+                startGameplayTimer(GAMEPLAY_TIME_IN_SECONDS);
+                clearInterval(startCountdownInterval);
+                hideBoardCover();
+            }
+            else{
+                onStartMessage.textContent = "Starting in " + secondsToStart--;
+            }
+        }
+        else{
+            resetTimers();
+        }
+    }
+
+    function drawBarTimer(){
         var width = 0;
         let gameplayInMiliseconds = GAMEPLAY_TIME_IN_SECONDS *10;
         let intervalsInMiliseconds = 100;
-        timerBarInterval = setInterval(drawTimeBar, intervalsInMiliseconds);
-        function drawTimeBar() {
+        barTimerInterval = setInterval(drawBar, intervalsInMiliseconds);
+        function drawBar() {
             if (width >= 100) {
             } else {
             width+=intervalsInMiliseconds/gameplayInMiliseconds; 
-            timeBar.style.width = width + '%'; 
+            timerBar.style.width = width + '%'; 
             }
         }
         }
@@ -191,13 +207,12 @@ function makeGame() {
     function setLevel(lvl){
         //new multiplier
         multiplier = (lvl * 0.2 + 0.8).toFixed(1);
-
         level = lvl;
-        //If someone lose it is nessesairy to reset colors
-        for (let i = 0; i < 5; i++) {
-            levelDisplay[i].classList.remove("completedLevel");
-        }
-        //setting next level as completed
+        //removing yellow color from all levels
+        levelDisplay.forEach((element)=>{
+            element.classList.remove("completedLevel")
+        });
+        //adding yellow color to completed levels
         for (let i = 0; i < level; i++) {
             levelDisplay[i].classList.add("completedLevel");
         }
@@ -205,15 +220,14 @@ function makeGame() {
     
     //ARRAYS SECTION
     //-----------------------------------------------------------------------
-    function generateNewFilledArrays(){
-        sortedArray = generateRandomArray();
+    function generateNewFilledArrays(){ 
+        sortedArray = generateArrayByLevel();
         shuffledArray = shuffleArray(sortedArray.slice(0));
     }
 
-    function generateRandomArray(){ 
+    function generateArrayByLevel(){ 
         let startPointsByLevel = [1, 51, 201, 501, 1001];
         let squareValue = startPointsByLevel[level-1];// -1 because array starts from [0]
-
         let array = [];
         
         for(let i=0; i<NUMBER_OF_SQUARES ; i++){
@@ -223,6 +237,7 @@ function makeGame() {
         return array;
     }
     
+    //to redistribute numbers to random squares on the board
     function shuffleArray(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -235,30 +250,26 @@ function makeGame() {
     //SQUARE SECTION
     //-----------------------------------------------------------------------
     function drawSquares(){
-        for (let i = 0; i < squares.length; i++) {
-            squares[i].textContent = shuffledArray[i];
-        }
+        squares.forEach( (square, index)=>{
+            square.textContent = shuffledArray[index];
+        });
     }
 
     function onSquarePressed(square){
-        let clickedSquare = square.textContent;
-        if(clickedSquare == sortedArray[0]){
-            square.style.visibility="hidden";
-            sortedArray.splice(0,1);//remove first item from sorted array
-            correctAnswers++;       //now sortedArray[0] is the next lowest number
-            addScore();
-        }else if(clickedSquare == ""){ 
-            //if user pressed empty square several times before game starts, 
-            //startGame() were called more than once 
-            //this if() prevents user to call startGame more than once
-            if (userClickOnEmptySquare<1) {
-                console.log("start game");
-                startGame();
+        if(isGameStarted){
+            if(square.textContent == sortedArray[0]){
+                square.style.visibility="hidden";
+                sortedArray.splice(0,1);//remove first item from sorted array
+                correctAnswers++;       //now sortedArray[0] is the next lowest number
+                addScore();
             }
-            ++userClickOnEmptySquare;
-        }else{
-            messageDisplay.textContent = "You clicked " + square.textContent + " but there was " + sortedArray[0];
-            gameLost();  
+            else{
+                messageDisplay.textContent = "You clicked " + square.textContent + " but there was " + sortedArray[0];
+                gameLost();
+            }
+        }
+        else {
+            startGame();
         }
 
         if(correctAnswers === NUMBER_OF_SQUARES){
@@ -270,30 +281,28 @@ function makeGame() {
     //-----------------------------------------------------------------------
     function setupEventListeners(){
         //Square event listeners
-        for (let i = 0; i < squares.length; i++) {
-            squares[i].addEventListener("click", function(){
-                onSquarePressed(this);
-            })
-        }
+        squares.forEach(square => {
+            square.addEventListener("click", ()=> {
+                onSquarePressed(square);
+            });
+        });
 
         //Start game button
-        startButton.addEventListener("click", function(){
-           ++userClickOnEmptySquare;
-           startGame();
+        startButton.addEventListener("click", ()=> {
+            startGame();
         });
 
         //difficulty buttons listeners
-        for (let buttonNumber = 0; buttonNumber < difficultyButtons.length; buttonNumber++) {
-            difficultyButtons[buttonNumber].addEventListener("click", function(){
-                difficultyButtons[0].classList.remove("selected");
-                difficultyButtons[1].classList.remove("selected");
-                difficultyButtons[2].classList.remove("selected");
-                this.classList.add("selected");
-                setLevel(1);
-                changeGameDifficulty(buttonNumber+1);//because buttonNumber starts from 0
-                resetGame();
-            });
-        }
+        difficultyButtons.forEach( (pressedButton, buttonIndex) => {
+                pressedButton.addEventListener("click",() => {
+                    difficultyButtons.forEach(button=>button.classList.remove("selected"));
+                    pressedButton.classList.add("selected");
+                    setLevel(1);
+                    changeGameDifficulty(buttonIndex+1);//because buttonNumber starts from 0
+                    resetGame();
+                })
+        })
+
     }
 
     return {
