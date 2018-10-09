@@ -4,18 +4,17 @@ function makeGame() {
     //variables
     const NUMBER_OF_SQUARES = 24;
     const GAMEPLAY_TIME_IN_SECONDS = 35;
-    let gameDifficulty = 1; //TODO Enum
+    let gameDifficulty = 1;
     let multiplier = 1; //To calculate score
     let level = 1;
-    let sortedArray = generateRandomArray(level);
+    let sortedArray = generateArrayByLevel();
     let shuffledArray = shuffleArray(sortedArray.slice(0));
     let correctAnswers = 0;
     let userClickOnEmptySquare = 0; 
     let score = 0;
     let highScore = 0;
     let secondsLeft = 0;
-    let timerInterval = 0;
-    let timerBarInterval = 0;
+    let secondsToStart = 3;
 
     //html elements
     let difficultyButtons = document.querySelectorAll(".mode");
@@ -27,38 +26,28 @@ function makeGame() {
     let squares = document.querySelectorAll(".square");
     let currentScore = document.querySelector("#currentScore");
     let highestScore = document.querySelector("#highestScore"); 
+    let coverBoard = document.querySelector("#coverBoard");
+    let onStartMessage = document.querySelector(".onStartMessage"); 
 
     function init(){
         setupEventListeners();
-        setLevel(1);
     }
 
     //MAIN FUNCTIONALITY SECTION
     //-----------------------------------------------------------------------
-    function sleep (ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
     
     function startGame(){
         startButton.style.visibility = "hidden";
         messageDisplay.textContent = "Your first number will be " + sortedArray[0];
-         
-        //I don't like this code, but I could not find a better solution
-        timeBarText.textContent = "Game starts in 3 seconds";
-        sleep(1000).then(() => {
-            timeBarText.textContent = "Game starts in 2 seconds";
-            sleep(1000).then(() => {
-                timeBarText.textContent = "Game starts in 1 seconds";
-                sleep(1000).then(() => {
-                    startTimer(GAMEPLAY_TIME_IN_SECONDS);
-                    drawSquares();
-                    messageDisplay.textContent = "";
-                });
-            });
-        });
+        countdownToStart();
+        startCountdownInterval = setInterval(countdownToStart, 1000);
+        coverBoard.classList.toggle("coverBoard")
     }
 
+
     function gameLost(){
+        coverBoard.classList.toggle("coverBoard");
+        setTimeout(()=>{coverBoard.classList.toggle("coverBoard"); },1500);
         setLevel(1);
         resetGame();
         saveBestScore();
@@ -76,8 +65,7 @@ function makeGame() {
         resetGame();
         messageDisplay.textContent = "Congrats, ready for the next level?";
         console.log("Moving to the next level");    
-        }
-          
+        }   
     }
 
     function endOfTheGame(){
@@ -154,7 +142,7 @@ function makeGame() {
         timeBar.style.width = '0%';
     }
 
-    function startTimer(seconds){
+    function startGameplayTimer(seconds){
         drawTimerBar();
         displayTime(seconds);
         timerInterval = setInterval(displayTime, 1000);
@@ -169,6 +157,21 @@ function makeGame() {
                 timeBarText.textContent = seconds + "s";
                 seconds--;
             }
+        }
+    }
+
+    function countdownToStart(){
+        if(secondsToStart === 0){
+            clearInterval(startCountdownInterval);
+            startGameplayTimer(GAMEPLAY_TIME_IN_SECONDS);
+            drawSquares();
+            coverBoard.classList.toggle("coverBoard")
+            onStartMessage.textContent = "";
+            secondsToStart = 3;
+        }
+        else{
+            onStartMessage.textContent = "Starting in " + secondsToStart;
+            secondsToStart--;
         }
     }
 
@@ -191,12 +194,11 @@ function makeGame() {
     function setLevel(lvl){
         //new multiplier
         multiplier = (lvl * 0.2 + 0.8).toFixed(1);
-
         level = lvl;
         //If someone lose it is nessesairy to reset colors
-        for (let i = 0; i < 5; i++) {
-            levelDisplay[i].classList.remove("completedLevel");
-        }
+        levelDisplay.forEach((element)=>{
+            element.classList.remove("completedLevel")
+        });
         //setting next level as completed
         for (let i = 0; i < level; i++) {
             levelDisplay[i].classList.add("completedLevel");
@@ -205,15 +207,14 @@ function makeGame() {
     
     //ARRAYS SECTION
     //-----------------------------------------------------------------------
-    function generateNewFilledArrays(){
-        sortedArray = generateRandomArray();
+    function generateNewFilledArrays(){ 
+        sortedArray = generateArrayByLevel();
         shuffledArray = shuffleArray(sortedArray.slice(0));
     }
 
-    function generateRandomArray(){ 
+    function generateArrayByLevel(){ 
         let startPointsByLevel = [1, 51, 201, 501, 1001];
         let squareValue = startPointsByLevel[level-1];// -1 because array starts from [0]
-
         let array = [];
         
         for(let i=0; i<NUMBER_OF_SQUARES ; i++){
@@ -235,9 +236,9 @@ function makeGame() {
     //SQUARE SECTION
     //-----------------------------------------------------------------------
     function drawSquares(){
-        for (let i = 0; i < squares.length; i++) {
-            squares[i].textContent = shuffledArray[i];
-        }
+        squares.forEach( (square, index)=>{
+            square.textContent = shuffledArray[index];
+        });
     }
 
     function onSquarePressed(square){
@@ -248,11 +249,8 @@ function makeGame() {
             correctAnswers++;       //now sortedArray[0] is the next lowest number
             addScore();
         }else if(clickedSquare == ""){ 
-            //if user pressed empty square several times before game starts, 
-            //startGame() were called more than once 
-            //this if() prevents user to call startGame more than once
-            if (userClickOnEmptySquare<1) {
-                console.log("start game");
+            if (userClickOnEmptySquare<1) {// if <- to prevent executing startGame more than once
+                console.log("Game started");
                 startGame();
             }
             ++userClickOnEmptySquare;
