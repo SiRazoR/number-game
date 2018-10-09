@@ -8,7 +8,7 @@ body{
     position: absolute;
 }
 
-.coverBoard{
+.boardCover{
     height: 100%;
     width: 100%;
     position: absolute;
@@ -173,7 +173,7 @@ button:focus {outline:0;}
     height: 30px;
 }
 
-#myBar {
+#timerBar {
     width: 0%;
     height: 30px;
     border-radius: 20px;
@@ -241,7 +241,7 @@ button:focus {outline:0;}
         font-size: 80%;
     }
 
-    .innerTest{
+    .onStartMessage{
         font-size: 3em;
     }
     
@@ -255,7 +255,7 @@ button:focus {outline:0;}
     button{
         font-size: 80%;
     }
-    .innerTest{
+    .onStartMessage{
         font-size: 2.2em;
     }
     .scoreStripe{
