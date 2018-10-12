@@ -15,6 +15,7 @@ function makeGame() {
     let isGameStarted = false;
     let digitalTimerInterval = 0;
     let barTimerInterval = 0;
+    let startCountdownInterval = 0; 
 
     //html elements
     let difficultyButtons = document.querySelectorAll(".mode");
